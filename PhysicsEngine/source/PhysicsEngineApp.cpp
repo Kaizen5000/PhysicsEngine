@@ -4,6 +4,7 @@
 #include "Physics\Scene.h"
 #include "Physics\Object.h"
 #include "Physics\Sphere.h"
+#include "Physics\Plane.h"
 
 #include "Gizmos.h"
 #include "Input.h"
@@ -41,15 +42,15 @@ bool PhysicsEngineApp::startup() {
 	// Create an scene
 	m_scene = new Scene();
 	m_scene->setGlobalForce(vec3());
-	m_scene->setGravity(vec3());
+	//m_scene->setGravity(vec3());
 
 	// Make heavy object
-	m_sphere = new Sphere(vec3(), 2.0f, 10.0f, vec4(0.2f, 0.1f, 0.7f, 0.9f), false);
+	m_sphere = new Sphere(vec3(), 2.0f, 3.0f, vec4(0.2f, 0.1f, 0.7f, 0.9f), false);
 	m_scene->addObject(m_sphere);
-	m_sphere->setVelocity(vec3(1.0f, 0.0f, 0.0f));
+	m_sphere->applyForce(vec3(1000.0f, 0.0f, 0.0f));
 
 	// Make light object
-	Sphere * sphere2 = new Sphere(vec3(5.0f, 0.0f, 0.0f),3.0f,2.0f, vec4(1.0f, 1.0f, 0.2f, 1.0f), false);
+	Sphere * sphere2 = new Sphere(vec3(20.0f, 0.0f, 0.0f),3.0f,1.0f, vec4(1.0f, 1.0f, 0.2f, 1.0f), false);
 	m_scene->addObject(sphere2);
 
 	
@@ -58,6 +59,9 @@ bool PhysicsEngineApp::startup() {
 	Sphere * sphere3 = new Sphere(vec3(-3.0f, 10.f, 3.0f), 2.0f, 1.0f, vec4(1.0f, 1.0f, 0.2f, 1.0f), true);
 	m_scene->addObject(sphere3);
 	
+
+	Plane * plane = new Plane(0, vec3(0, 1, 0), vec4(0.2f, 1.0f, 0.2f, 0.7f));
+	m_scene->addObject(plane);
 
 	return true;
 }
@@ -71,8 +75,8 @@ void PhysicsEngineApp::shutdown() {
 void PhysicsEngineApp::update(float deltaTime) {
 
 	m_camera->Update(deltaTime);
-	ImGui::Begin("Gravity Debug");
-//	ImGui::Text("Velocity: %f", m_object->getVelocity().y);
+	ImGui::Begin("Debug");
+	ImGui::Text("Velocity: %f", m_sphere->getVelocity().x);
 	ImGui::End();
 
 	// wipe the gizmos clean for this frame
@@ -99,6 +103,13 @@ void PhysicsEngineApp::update(float deltaTime) {
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
 
+	if (input->wasMouseButtonPressed(aie::INPUT_MOUSE_BUTTON_LEFT))
+	{
+		Sphere * sphere3 = new Sphere(m_camera->GetPosition(), 2.0f, 1.0f, vec4(1.0f, 1.0f, 0.2f, 1.0f), false);
+		m_scene->addObject(sphere3);
+		sphere3->setVelocity(m_camera->getHeading() * 15.f);
+
+	}
 	/*
 	if (input->isKeyDown(aie::INPUT_KEY_UP))
 		m_object->applyForce(vec3(0, 0, force));

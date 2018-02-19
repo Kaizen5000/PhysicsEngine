@@ -126,6 +126,7 @@ glm::mat4 Camera::GetProjectionView()
 {
 	return m_projectionMatrix * m_viewMatrix;
 }
+
 void Camera::Lookat(glm::vec3 target)
 {
 	glm::vec3 dir = glm::normalize(target - m_cameraPosition);

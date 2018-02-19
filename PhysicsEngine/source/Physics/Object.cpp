@@ -1,5 +1,6 @@
 #include "Physics\Object.h"
 #include "Physics\Sphere.h"
+#include "Physics\Plane.h"
 #include "Gizmos.h"
 #include <glm/geometric.hpp>
 using namespace Physics;
@@ -29,6 +30,10 @@ bool Physics::Object::isColliding(Object * other)
 			return isCollidingSphereSphere((Sphere *)this, (Sphere *)other);
 		}
 		break;
+		case PLANE:
+		{
+			return isCollidingPlaneSphere((Plane *)other, (Sphere*)this);
+		}
 		return false;
 		}
 	}
@@ -37,7 +42,17 @@ bool Physics::Object::isColliding(Object * other)
 	{}
 	break;
 	case PLANE:
-	{}
+	{
+		switch (other->getShapeType())
+		{
+		case SPHERE:
+		{
+			return isCollidingPlaneSphere((Plane *)this, (Sphere *)other);
+		}
+		break;
+		return false;
+		}
+	}
 	break;
 	return false;
 	}
@@ -58,6 +73,15 @@ bool Physics::Object::isCollidingSphereSphere(Sphere * objA, Sphere * objB)
 
 	// Is the distance smaller than the radii
 	return distance < radii;
+}
+
+bool Physics::Object::isCollidingPlaneSphere(Plane * objA, Sphere * objB)
+{
+	vec3 spherePosition = objA->getPosition() + objB->getPosition();
+	vec3 planeNormal = glm::normalize(objA->getDirection());
+
+	float distance = glm::dot(spherePosition, planeNormal) - objA->getDistance();
+	return (distance < objB->getRadius());
 }
 
 void Object::update(float deltaTime)

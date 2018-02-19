@@ -5,6 +5,7 @@ using glm::vec4;
 namespace Physics
 {
 	class Sphere;
+	class Plane;
 	enum ShapeType {SPHERE, PLANE, AABB};
 	class Object
 	{
@@ -31,6 +32,7 @@ namespace Physics
 		inline const float getFriction() const { return m_friction; }
 		inline const ShapeType getShapeType() const { return m_shape; }
 		inline const float getElasticity() const { return m_elasticity; }
+		inline const bool getIsStatic() const { return m_isStatic; }
 
 		// Setters
 		inline void setPosition(const vec3 & pos) { m_position = pos; }
@@ -47,11 +49,12 @@ namespace Physics
 		ShapeType m_shape;
 		float m_mass = 1.0f;
 		float m_friction = 0.3f;
-		float m_elasticity = 0.5;
+		float m_elasticity = 1.f;
 		vec4 m_color;
 		bool m_isStatic;
 
 		bool isCollidingSphereSphere(Sphere * objA, Sphere * objB);
+		bool isCollidingPlaneSphere(Plane * objA, Sphere * objB);
 	};
 }
 

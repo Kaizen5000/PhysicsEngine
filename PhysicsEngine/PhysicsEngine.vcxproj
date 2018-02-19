@@ -162,6 +162,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Physics\Plane.cpp" />
     <ClCompile Include="source\Camera.cpp" />
     <ClCompile Include="source\PhysicsEngineApp.cpp" />
     <ClCompile Include="source\main.cpp" />
@@ -175,6 +176,7 @@
     <ClInclude Include="include\Physics\Object.h" />
     <ClInclude Include="include\Physics\Scene.h" />
     <ClInclude Include="include\Physics\Sphere.h" />
+    <ClInclude Include="include\Physics\Plane.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

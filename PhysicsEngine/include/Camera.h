@@ -25,7 +25,7 @@ public:
 	glm::mat4& GetView();
 	glm::mat4& GetProjection();
 	glm::mat4 GetProjectionView();
-
+	const glm::vec3& getHeading() const { return m_cameraFront; }
 	void Lookat(glm::vec3 target);
 
 	void SetMovementKeys(int forwardKey, int backKey, int leftKey, int rightKey);
