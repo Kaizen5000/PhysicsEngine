@@ -6,8 +6,9 @@
 using namespace Physics;
 using glm::vec3;
 
-Physics::Plane::Plane(float distance, vec3 direction, vec4 color) : m_direction(direction), m_distance(distance), Object(Physics::ShapeType::PLANE, distance * direction, 0.f, color, true)
+Physics::Plane::Plane(float distance, vec3 direction, vec4 color) :  m_distance(distance), Object(Physics::ShapeType::PLANE, distance * direction, 0.f, color, true)
 {
+	m_direction = glm::normalize(direction);
 }
 
 Plane::~Plane()

@@ -10,6 +10,7 @@ namespace Physics {
 	{
 		Object * objA;
 		Object * objB;
+		vec3 collisionNormal;
 	};
 	class Scene
 	{

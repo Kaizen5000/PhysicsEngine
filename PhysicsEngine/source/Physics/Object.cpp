@@ -1,6 +1,6 @@
-#include "Physics\Object.h"
-#include "Physics\Sphere.h"
-#include "Physics\Plane.h"
+#include "Physics/Object.h"
+#include "Physics/Sphere.h"
+#include "Physics/Plane.h"
 #include "Gizmos.h"
 #include <glm/geometric.hpp>
 using namespace Physics;
@@ -17,7 +17,7 @@ Object::~Object()
 {
 }
 
-bool Physics::Object::isColliding(Object * other)
+bool Physics::Object::isColliding(Object * other, vec3 & collisionNormal)
 {
 	switch (m_shape)
 	{
@@ -27,39 +27,31 @@ bool Physics::Object::isColliding(Object * other)
 		{
 		case SPHERE:
 		{
-			return isCollidingSphereSphere((Sphere *)this, (Sphere *)other);
+			return isCollidingSphereSphere((Sphere *)this, (Sphere *)other, collisionNormal);
 		}
-		break;
 		case PLANE:
 		{
-			return isCollidingPlaneSphere((Plane *)other, (Sphere*)this);
+			return isCollidingPlaneSphere((Plane *)other, (Sphere*)this, collisionNormal);
 		}
-		return false;
 		}
 	}
-	break;
 	case AABB:
 	{}
-	break;
 	case PLANE:
 	{
 		switch (other->getShapeType())
 		{
 		case SPHERE:
 		{
-			return isCollidingPlaneSphere((Plane *)this, (Sphere *)other);
+			return isCollidingPlaneSphere((Plane *)this, (Sphere *)other, collisionNormal);
 		}
-		break;
-		return false;
 		}
 	}
-	break;
-	return false;
 	}
 	return false;
 }
 
-bool Physics::Object::isCollidingSphereSphere(Sphere * objA, Sphere * objB)
+bool Physics::Object::isCollidingSphereSphere(Sphere * objA, Sphere * objB, vec3 &collisionNormal)
 {
 	// Assumes both are spheres
 	assert(objA != nullptr);
@@ -72,16 +64,26 @@ bool Physics::Object::isCollidingSphereSphere(Sphere * objA, Sphere * objB)
 	float radii = objA->getRadius() + objB->getRadius();
 
 	// Is the distance smaller than the radii
-	return distance < radii;
+	if (distance < radii)
+	{
+		collisionNormal = glm::normalize(objB->getPosition() - objA->getPosition());
+		return true;
+	}
+	return false;
+
 }
 
-bool Physics::Object::isCollidingPlaneSphere(Plane * objA, Sphere * objB)
+bool Physics::Object::isCollidingPlaneSphere(Plane * objA, Sphere * objB, vec3 &collisionNormal)
 {
 	vec3 spherePosition = objA->getPosition() + objB->getPosition();
-	vec3 planeNormal = glm::normalize(objA->getDirection());
 
-	float distance = glm::dot(spherePosition, planeNormal) - objA->getDistance();
-	return (distance < objB->getRadius());
+	float distance = glm::dot(spherePosition, objA->getDirection()) - objA->getDistance();
+	if (distance < objB->getRadius())
+	{
+		collisionNormal = objA->getDirection();
+		return true;
+	}
+	return false;
 }
 
 void Object::update(float deltaTime)

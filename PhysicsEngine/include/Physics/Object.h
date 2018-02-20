@@ -21,7 +21,7 @@ namespace Physics
 		void applyImpulse(const vec3 & impulse);
 		virtual ~Object() = 0;
 
-		virtual bool isColliding(Object * other);
+		virtual bool isColliding(Object * other, vec3 & collisionNormal);
 
 
 		// Getters
@@ -53,8 +53,8 @@ namespace Physics
 		vec4 m_color;
 		bool m_isStatic;
 
-		bool isCollidingSphereSphere(Sphere * objA, Sphere * objB);
-		bool isCollidingPlaneSphere(Plane * objA, Sphere * objB);
+		bool isCollidingSphereSphere(Sphere * objA, Sphere * objB, vec3 &collisionNormal);
+		bool isCollidingPlaneSphere(Plane * objA, Sphere * objB, vec3 &collisionNormal);
 	};
 }
 

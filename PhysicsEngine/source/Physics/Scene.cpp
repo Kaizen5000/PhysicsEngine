@@ -1,7 +1,7 @@
-#include "Physics\Scene.h"
-#include "Physics\Object.h"
-#include "Physics\Sphere.h"
-#include "Physics\Plane.h"
+#include "Physics/Scene.h"
+#include "Physics/Object.h"
+#include "Physics/Sphere.h"
+#include "Physics/Plane.h"
 #include <Gizmos.h>
 
 using namespace Physics;
@@ -96,11 +96,19 @@ void Physics::Scene::checkCollision()
 		// The second loop only checks after the first in the vector
 		for (auto object2 = object + 1; object2 != m_objects.end(); object2++)
 		{
-			if ((*object)->isColliding(*object2))
+			Collision tempCollision;
+			if ((*object)->isColliding(*object2, tempCollision.collisionNormal))
 			{
-				Collision tempCollision;
-				tempCollision.objA = *object;
-				tempCollision.objB = *object2;
+				if ((*object)->getShapeType() == SPHERE && (*object2)->getShapeType() == PLANE)
+				{
+					tempCollision.objA = *object2;
+					tempCollision.objB = *object;
+				}
+				else
+				{
+					tempCollision.objA = *object;
+					tempCollision.objB = *object2;
+				}
 				m_collisions.push_back(tempCollision);
 			}
 		}
@@ -112,11 +120,8 @@ void Physics::Scene:: resolveCollision()
 
 	for (auto col : m_collisions)
 	{
-		// Create a vector from A to B
-		vec3 distance = col.objB->getPosition() - col.objA->getPosition();
-		// Create a normalised collision vector
-		vec3 nomalisedCollision = glm::normalize(distance);
-
+		if (col.objA->getIsStatic() && col.objB->getIsStatic()) continue;
+	
 		// Inverse masses
 		float inverseMassObjA = 1 / col.objA->getMass();
 		float inverseMassObjB = 1 / col.objB->getMass();
@@ -125,7 +130,7 @@ void Physics::Scene:: resolveCollision()
 		vec3 relativeVelocity = col.objB->getVelocity() - col.objA->getVelocity();
 
 		// Find out how much of the relative velocity goes along the collision vector
-		float impactForce = glm::dot(relativeVelocity, nomalisedCollision);
+		float impactForce = glm::dot(relativeVelocity, col.collisionNormal);
 
 		// Start putting together the impulse force
 		// Elasticity ( this will be the object variable, might need to average it from both objects)
@@ -136,31 +141,42 @@ void Physics::Scene:: resolveCollision()
 
 		if (col.objA->getShapeType() == SPHERE && col.objB->getShapeType() == SPHERE)
 		{
-			
-
-			// Create a function for applyImpulse(vec3) in our object
-			// This applies force without multiplying by deltatime
-
-			// Apply the J along the collision vector direction to object B
-			col.objB->applyImpulse((nomalisedCollision * impulseMagnitude )* inverseMassObjB);
-			// Apply the J against the collision vector direction to object A
-			col.objA->applyImpulse((-nomalisedCollision * impulseMagnitude )* inverseMassObjA);
-
-			// Seperate the two objects, using whatever detail of seperation you want
 			Sphere * sphereA = (Sphere*)col.objA;
 			Sphere * sphereB = (Sphere*)col.objB;
 			float penetration = (sphereA->getRadius() + sphereB->getRadius()) - (glm::distance(col.objB->getPosition(), col.objA->getPosition()));
 
-			if(!col.objB->getIsStatic()) col.objB->setPosition(col.objB->getPosition() + (penetration / 2)* nomalisedCollision);
-			if(!col.objA->getIsStatic()) col.objA->setPosition(col.objA->getPosition() - (penetration / 2)* nomalisedCollision);
+			if (col.objA->getIsStatic())
+			{
+				col.objB->setVelocity(col.objB->getVelocity() - (1 + col.objB->getElasticity()) * glm::dot(col.objB->getVelocity(), col.collisionNormal) * col.collisionNormal );
+			}
+			else
+			{
+				// Apply the J along the collision vector direction to object B
+				col.objB->applyImpulse((col.collisionNormal * impulseMagnitude)* inverseMassObjB);
+			}
+
+			if (col.objB->getIsStatic())
+			{
+
+				col.objA->setVelocity(col.objA->getVelocity() - (1 + col.objA->getElasticity()) * glm::dot(col.objA->getVelocity(), col.collisionNormal) * col.collisionNormal);
+			}
+			else
+			{
+				// Apply the J against the collision vector direction to object A
+				col.objA->applyImpulse((-col.collisionNormal * impulseMagnitude)* inverseMassObjA);
+			}
+
+			// Seperate the two objects, using whatever detail of seperation you want
+			if(!col.objB->getIsStatic()) col.objB->setPosition(col.objB->getPosition() + (penetration / 2)* col.collisionNormal);
+			if(!col.objA->getIsStatic()) col.objA->setPosition(col.objA->getPosition() - (penetration / 2)* col.collisionNormal);
 		}
 		else
 		{
 			Plane* plane = (Plane*)col.objA;
-
 			// Resulting velocity = velocity - (1 + elasticity)velocity.collision normal * collision normal
 			vec3 velocity = col.objB->getVelocity() - (1 + col.objB->getElasticity())  * (glm::dot(col.objB->getVelocity(), plane->getDirection())) * plane->getDirection();
 			col.objB->setVelocity(velocity);
+			
 		}
 	}
 	m_collisions.clear();

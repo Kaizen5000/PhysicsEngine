@@ -162,6 +162,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Physics\Constraint.cpp" />
     <ClCompile Include="source\Physics\Plane.cpp" />
     <ClCompile Include="source\Camera.cpp" />
     <ClCompile Include="source\PhysicsEngineApp.cpp" />
@@ -169,14 +170,17 @@
     <ClCompile Include="source\Physics\Object.cpp" />
     <ClCompile Include="source\Physics\Scene.cpp" />
     <ClCompile Include="source\Physics\Sphere.cpp" />
+    <ClCompile Include="source\Physics\Spring.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\PhysicsEngineApp.h" />
+    <ClInclude Include="include\Physics\Constraint.h" />
     <ClInclude Include="include\Physics\Object.h" />
     <ClInclude Include="include\Physics\Scene.h" />
     <ClInclude Include="include\Physics\Sphere.h" />
     <ClInclude Include="include\Physics\Plane.h" />
+    <ClInclude Include="include\Physics\Spring.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

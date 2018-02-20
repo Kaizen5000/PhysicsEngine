@@ -44,24 +44,29 @@ bool PhysicsEngineApp::startup() {
 	m_scene->setGlobalForce(vec3());
 	//m_scene->setGravity(vec3());
 
-	// Make heavy object
-	m_sphere = new Sphere(vec3(), 2.0f, 3.0f, vec4(0.2f, 0.1f, 0.7f, 0.9f), false);
-	m_scene->addObject(m_sphere);
-	m_sphere->applyForce(vec3(1000.0f, 0.0f, 0.0f));
 
-	// Make light object
-	Sphere * sphere2 = new Sphere(vec3(20.0f, 0.0f, 0.0f),3.0f,1.0f, vec4(1.0f, 1.0f, 0.2f, 1.0f), false);
-	m_scene->addObject(sphere2);
+	// Make heavy object
+	m_sphere = new Sphere(vec3(0,20,0), 2.0f, 3.0f, vec4(0.2f, 0.1f, 0.7f, 0.9f), false);
+	m_scene->addObject(m_sphere);
+	//m_sphere->applyForce(vec3(1000.0f, 0.0f, 0.0f));
+
 
 	
+
+	// Make light object
+	Sphere * sphere2 = new Sphere(vec3(20.0f, 20.0f, 0.0f),3.0f,1.0f, vec4(1.0f, 1.0f, 0.2f, 1.0f), false);
+	m_scene->addObject(sphere2);
+
+
+	Plane * plane = new Plane(0, vec3(0, 1, 0), vec4(0.2f, 1.0f, 0.2f, 0.7f));
+	m_scene->addObject(plane);
 
 	// Make static sphere
 	Sphere * sphere3 = new Sphere(vec3(-3.0f, 10.f, 3.0f), 2.0f, 1.0f, vec4(1.0f, 1.0f, 0.2f, 1.0f), true);
 	m_scene->addObject(sphere3);
 	
 
-	Plane * plane = new Plane(0, vec3(0, 1, 0), vec4(0.2f, 1.0f, 0.2f, 0.7f));
-	m_scene->addObject(plane);
+	
 
 	return true;
 }
@@ -105,21 +110,11 @@ void PhysicsEngineApp::update(float deltaTime) {
 
 	if (input->wasMouseButtonPressed(aie::INPUT_MOUSE_BUTTON_LEFT))
 	{
-		Sphere * sphere3 = new Sphere(m_camera->GetPosition(), 2.0f, 1.0f, vec4(1.0f, 1.0f, 0.2f, 1.0f), false);
+		Sphere * sphere3 = new Sphere(m_camera->GetPosition(), .5f, 1.0f, vec4(0.4f, 0.5f, 0.1f, 0.8f), false);
 		m_scene->addObject(sphere3);
 		sphere3->setVelocity(m_camera->getHeading() * 15.f);
 
 	}
-	/*
-	if (input->isKeyDown(aie::INPUT_KEY_UP))
-		m_object->applyForce(vec3(0, 0, force));
-	if (input->isKeyDown(aie::INPUT_KEY_DOWN))
-		m_object->applyForce(vec3(0, 0, -force));
-	if (input->isKeyDown(aie::INPUT_KEY_LEFT))
-		m_object->applyForce(vec3(force, 0, 0));
-	if (input->isKeyDown(aie::INPUT_KEY_RIGHT))
-		m_object->applyForce(vec3(-force, 0, 0));
-		*/
 		
 	m_scene->applyGlobalForce();
 	m_scene->update(deltaTime);
