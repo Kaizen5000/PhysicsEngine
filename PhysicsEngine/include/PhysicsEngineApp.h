@@ -7,6 +7,7 @@ class Camera;
 namespace Physics {
 	class Scene;
 	class Sphere;
+	class Spring;
 }
 
 
@@ -29,4 +30,6 @@ protected:
 	
 	Physics::Scene * m_scene = nullptr;
 	Physics::Sphere * m_sphere;
+	Physics::Spring * m_spring;
+	inline bool isClothStaticSphere(int i, int rows, int j, int columns);
 };

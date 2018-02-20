@@ -76,11 +76,12 @@ bool Physics::Object::isCollidingSphereSphere(Sphere * objA, Sphere * objB, vec3
 bool Physics::Object::isCollidingPlaneSphere(Plane * objA, Sphere * objB, vec3 &collisionNormal)
 {
 	vec3 spherePosition = objA->getPosition() + objB->getPosition();
-
+	
 	float distance = glm::dot(spherePosition, objA->getDirection()) - objA->getDistance();
 	if (distance < objB->getRadius())
 	{
 		collisionNormal = objA->getDirection();
+		objB->setPosition(objB->getPosition() + collisionNormal * (objB->getRadius() -  distance));
 		return true;
 	}
 	return false;

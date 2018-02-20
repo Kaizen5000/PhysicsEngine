@@ -6,6 +6,7 @@ using std::vector;
 
 namespace Physics {
 	class Object;
+	class Spring;
 	struct Collision 
 	{
 		Object * objA;
@@ -28,13 +29,17 @@ namespace Physics {
 
 		void addObject(Object * object);
 		void removeObject(Object * object);
+		void addSpring(Spring * spring);
+		void removeSpring(Spring * spring);
+
 		void applyGlobalForce();
 	protected:
 		vector<Object *> m_objects;
+		vector<Collision> m_collisions;
+		vector<Spring *> m_springs;
+
 		vec3 m_gravity;
 		vec3 m_globalForce;
-
-		vector<Collision> m_collisions;
 
 		float m_fixedTimeStep;
 		float m_accumulatedTime;

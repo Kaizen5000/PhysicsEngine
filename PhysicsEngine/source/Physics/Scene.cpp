@@ -2,6 +2,7 @@
 #include "Physics/Object.h"
 #include "Physics/Sphere.h"
 #include "Physics/Plane.h"
+#include "Physics/Spring.h"
 #include <Gizmos.h>
 
 using namespace Physics;
@@ -39,6 +40,10 @@ void Scene::update(float deltaTime)
 		{
 			object->update(m_fixedTimeStep);
 		}
+		for (auto spring : m_springs)
+		{
+			spring->update(m_fixedTimeStep);
+		}
 		m_accumulatedTime -= m_fixedTimeStep;
 		checkCollision();
 		resolveCollision();
@@ -52,6 +57,10 @@ void Scene::draw()
 	for (auto object : m_objects)
 	{
 		object->draw();
+	}
+	for (auto spring : m_springs)
+	{
+		spring->draw();
 	}
 }
 
@@ -68,6 +77,22 @@ void Scene::removeObject(Object * object)
 	if (iter != m_objects.end())
 	{
 		m_objects.erase(iter);
+	}
+}
+
+void Physics::Scene::addSpring(Spring * spring)
+{
+	m_springs.push_back(spring);
+}
+
+void Physics::Scene::removeSpring(Spring * spring)
+{
+	// Find object in vector
+	auto iter = std::find(m_springs.begin(), m_springs.end(), spring);
+	// If found, delete
+	if (iter != m_springs.end())
+	{
+		m_springs.erase(iter);
 	}
 }
 
