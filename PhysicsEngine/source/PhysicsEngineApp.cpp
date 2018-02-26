@@ -42,9 +42,6 @@ bool PhysicsEngineApp::startup() {
 	
 	// Create an scene
 	m_scene = new Scene();
-	m_scene->setGlobalForce(vec3());
-	//m_scene->setGravity(vec3());
-
 
 	// Make heavy object
 	m_sphere = new Sphere(vec3(0.f,20.f,10.0f), 2.0f, 3.0f, vec4(0.2f, 0.1f, 0.7f, 0.9f), false);
@@ -62,91 +59,14 @@ bool PhysicsEngineApp::startup() {
 	// Make static sphere
 	Sphere * sphere3 = new Sphere(vec3(-3.0f, 10.f, 3.0f), 2.0f, 1.0f, vec4(1.0f, 1.0f, 0.2f, 1.0f), true);
 	m_scene->addObject(sphere3);
-	
+
 	// Spring
 	m_spring = new Spring(m_sphere, sphere2, 5.0f, 100.f, 1.f);
 	m_scene->addSpring(m_spring);
-	
-	int rows = 5;
-	int columns = 5;
-	float radius = 0.1f;
-	float springLength = 1.f;
-	float springDiagonal = 1.4f;
-	float springCoefficient = 20.f;
-	float springDamping = 0.2f;
-	vec3 origin = vec3(0, 10, 0);
-	vector<Object *> clothSpheres;
-	vector<Spring *> clothSprings;
-	Spring * clothSpring;
-	Sphere * clothSphere;
-	for (int i = 0; i < rows; i++)
-	{
-		for (int j = 0; j < columns; j++)
-		{
-			clothSphere = new Sphere(vec3(origin.x + (i), origin.y + (j), origin.z), radius, 0.1f, vec4(1.0f, 1.0f, 1.0f, 1.0f), isClothStaticSphere(i, rows, j, columns));
-			clothSpheres.push_back(clothSphere);
-		}
-	}
 
-	for (auto iter = clothSpheres.begin(); iter != clothSpheres.end(); iter++)
-	{
-		if (iter == clothSpheres.begin()){	int i = 0;	}
-	
-	}
+	// Make Cloth
+	MakeCloth(5, 5, vec3(0, 10, 0));
 
-	int currentRow = 0;
-	int currentColumn = 0;
-	for (int i = 0; i < clothSpheres.size(); i++)
-	{
-		// If end of the row is reached
-		if (currentColumn == columns)
-		{
-			currentColumn = 0;
-			currentRow++;
-		}
-
-		// If we haven't reached the last in the row
-		if (currentColumn < columns - 1)
-		{
-			// Next one in row
-			m_spring = new Spring(clothSpheres[i], clothSpheres[i + 1], springLength, springCoefficient, springDamping);
-			clothSprings.push_back(m_spring);
-		}
-
-		// Not the last row
-		if (currentRow < rows - 1)
-		{
-			if (currentColumn > 0)
-			{
-				//// Diagonal less
-				//m_spring = new Spring(clothSpheres[i], clothSpheres[i + columns - 1], 1.4f, 50.f, 1.f);
-				//clothSprings.push_back(m_spring);
-			}
-
-			if (currentColumn < columns - 1)
-			{
-				// Diagonal more
-				m_spring = new Spring(clothSpheres[i], clothSpheres[i + columns + 1], springDiagonal, springCoefficient, springDamping);
-				clothSprings.push_back(m_spring);
-			}
-
-			// Down
-			m_spring = new Spring(clothSpheres[i], clothSpheres[i + columns], springLength, springCoefficient, springDamping);
-			clothSprings.push_back(m_spring);
-		}
-
-		currentColumn++;
-	}
-
-	for (auto ball : clothSpheres)
-	{
-		m_scene->addObject(ball);
-	}
-
-	for (auto metalcoil : clothSprings)
-	{
-		m_scene->addSpring(metalcoil);
-	}
 	return true;
 }
 
@@ -160,7 +80,8 @@ void PhysicsEngineApp::update(float deltaTime) {
 
 	m_camera->Update(deltaTime);
 	ImGui::Begin("Debug");
-	ImGui::Text("Velocity: %f", m_sphere->getVelocity().x);
+	//ImGui::Text("Velocity: %f", m_sphere->getVelocity().x);
+	ImGui::Text("Assessment Mark: HD");
 	ImGui::End();
 
 	// wipe the gizmos clean for this frame
@@ -208,6 +129,81 @@ void PhysicsEngineApp::draw() {
 
 	// update perspective based on screen size
 	Gizmos::draw(m_camera->GetProjectionView());
+}
+
+void PhysicsEngineApp::MakeCloth(int rows, int columns, vec3 & origin,float radius, float springLength, float springDiagonal, float springCoefficient, float springDamping)
+{
+	vector<Object *> clothSpheres;
+	vector<Spring *> clothSprings;
+	Spring * clothSpring;
+	Sphere * clothSphere;
+	for (int i = 0; i < rows; i++)
+	{
+		for (int j = 0; j < columns; j++)
+		{
+			clothSphere = new Sphere(vec3(origin.x + (i), origin.y + (j), origin.z), radius, 0.1f, vec4(1.0f, 1.0f, 1.0f, 1.0f), isClothStaticSphere(i, rows, j, columns));
+			clothSpheres.push_back(clothSphere);
+		}
+	}
+
+	for (auto iter = clothSpheres.begin(); iter != clothSpheres.end(); iter++)
+	{
+		if (iter == clothSpheres.begin()) { int i = 0; }
+
+	}
+
+	int currentRow = 0;
+	int currentColumn = 0;
+	for (int i = 0; i < clothSpheres.size(); i++)
+	{
+		// If end of the row is reached
+		if (currentColumn == columns)
+		{
+			currentColumn = 0;
+			currentRow++;
+		}
+
+		// If we haven't reached the last in the row
+		if (currentColumn < columns - 1)
+		{
+			// Next one in row
+			m_spring = new Spring(clothSpheres[i], clothSpheres[i + 1], springLength, springCoefficient, springDamping);
+			clothSprings.push_back(m_spring);
+		}
+
+		// Not the last row
+		if (currentRow < rows - 1)
+		{
+			if (currentColumn > 0)
+			{
+				// Diagonal Left
+				m_spring = new Spring(clothSpheres[i], clothSpheres[i + columns - 1], springDiagonal, springCoefficient, springDamping);
+				clothSprings.push_back(m_spring);
+			}
+
+			if (currentColumn < columns - 1)
+			{
+				// Diagonal Right
+				m_spring = new Spring(clothSpheres[i], clothSpheres[i + columns + 1], springDiagonal, springCoefficient, springDamping);
+				clothSprings.push_back(m_spring);
+			}
+
+			// Up
+			m_spring = new Spring(clothSpheres[i], clothSpheres[i + columns], springLength, springCoefficient, springDamping);
+			clothSprings.push_back(m_spring);
+		}
+
+		currentColumn++;
+	}
+	for (auto sphere : clothSpheres)
+	{
+		m_scene->addObject(sphere);
+	}
+
+	for (auto springs : clothSprings)
+	{
+		m_scene->addSpring(springs);
+	}
 }
 
 bool PhysicsEngineApp::isClothStaticSphere(int i, int rows, int j, int columns)

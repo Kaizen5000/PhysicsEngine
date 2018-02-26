@@ -36,10 +36,10 @@
     <ClCompile Include="source\Physics\Plane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Physics\Constraint.cpp">
+    <ClCompile Include="source\Physics\Spring.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Physics\Spring.cpp">
+    <ClCompile Include="source\Physics\Constraint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

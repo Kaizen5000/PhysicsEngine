@@ -22,6 +22,7 @@ void Physics::Spring::update(float deltaTime)
 		force += -(springVec / distance) * (distance - m_restingLength) * m_springCoefficient;
 	}
 	force +=  -(m_objA->getVelocity() - m_objB->getVelocity()) * m_damping;
+
 	m_objA->applyForce(force);
 	m_objB->applyForce(-force);
 }

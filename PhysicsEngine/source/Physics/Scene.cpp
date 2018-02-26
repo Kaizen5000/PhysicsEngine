@@ -16,6 +16,8 @@ Scene::Scene()
 	//Defaults for fixed time at 100fps
 	m_fixedTimeStep = 0.01f;
 	m_accumulatedTime = 0.0f;
+
+	m_globalForce = vec3();
 }
 
 
@@ -206,3 +208,4 @@ void Physics::Scene:: resolveCollision()
 	}
 	m_collisions.clear();
 }
+
