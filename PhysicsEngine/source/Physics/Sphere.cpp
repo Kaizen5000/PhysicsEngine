@@ -1,4 +1,4 @@
-#include "..\..\include\Physics\Sphere.h"
+#include "Physics/Sphere.h"
 #include <Gizmos.h>
 using namespace Physics;
 
@@ -13,5 +13,6 @@ Sphere::~Sphere()
 
 void Physics::Sphere::draw()
 {
+	// Draws the sphere using its position, radius and colour
 	aie::Gizmos::addSphere(m_position, m_radius, 12, 12, m_color);
 }

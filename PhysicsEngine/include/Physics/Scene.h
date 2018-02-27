@@ -53,18 +53,34 @@ namespace Physics {
 		void applyGlobalForce();
 
 	protected:
+		// This vector will hold all the objects within the scene
 		vector<Object *> m_objects;
+
+		// This vector will be populated with collisions that have happened to be resolved
 		vector<Collision> m_collisions;
+
+		// A vector to hold all the springs in the scene
 		vector<Spring *> m_springs;
 
+		// A vector that determines the strength and direction of gravity
 		vec3 m_gravity;
+
+		// Global force applies to all object in the scene
 		vec3 m_globalForce;
 
+		// This float determines what increments the updates happen in
 		float m_fixedTimeStep;
+
+		// Accumulated time is increased by delta time each update
 		float m_accumulatedTime;
 	private:
+		// This function applies gravity as a force to all objects
 		void applyGravity();
+
+		// Checks collisions between all objects and populates the m_collisions vector
 		void checkCollision();
+
+		// Resolves all collisions in the m_collisions vector
 		void resolveCollision();
 	};
 }
