@@ -8,6 +8,7 @@
 #include "Physics/Sphere.h"
 #include "Physics/Plane.h"
 #include "Physics/Spring.h"
+#include "Physics/AABB.h"
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
@@ -65,6 +66,9 @@ bool PhysicsEngineApp::startup() {
 
 	// Make Cloth
 	MakeCloth(5, 5, vec3(0, 10, 0));
+
+	AABB * box = new AABB(vec3(2, 2, 2), vec3(2, 2, 2), 2.f, vec4(1.0f, 1.0f, 0.2f, 1.0f), true);
+	m_scene->addObject(box);
 
 	return true;
 }

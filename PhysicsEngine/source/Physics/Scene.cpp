@@ -157,7 +157,7 @@ void Physics::Scene::checkCollision()
 			if ((*object)->isColliding(*object2, tempCollision.collisionNormal))
 			{
 				// For the specific case where the first object is a sphere and the second object is a plane, they are added to the struct in reverse order
-				if ((*object)->getShapeType() == SPHERE && (*object2)->getShapeType() == PLANE)
+				if ((*object)->getShapeType() == ShapeType::SPHERE && (*object2)->getShapeType() == ShapeType::PLANE)
 				{
 					tempCollision.objA = *object2;
 					tempCollision.objB = *object;
@@ -199,7 +199,7 @@ void Physics::Scene:: resolveCollision()
 		float impulseMagnitude = (-(1 + averageElasticity) * impactForce) /  (inverseMassObjA + inverseMassObjB);
 
 		// If both objects are spheres
-		if (col.objA->getShapeType() == SPHERE && col.objB->getShapeType() == SPHERE)
+		if (col.objA->getShapeType() == ShapeType::SPHERE && col.objB->getShapeType() == ShapeType::SPHERE)
 		{
 			Sphere * sphereA = (Sphere*)col.objA;
 			Sphere * sphereB = (Sphere*)col.objB;

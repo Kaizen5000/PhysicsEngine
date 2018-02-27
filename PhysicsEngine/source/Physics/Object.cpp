@@ -27,37 +27,59 @@ bool Physics::Object::isColliding(Object * other, vec3 & collisionNormal)
 	// Case statement to identify this shape
 	switch (m_shape)
 	{
-	case SPHERE:
+	case ShapeType::SPHERE:
 	{
 		// After identifying this shape is a sphere, another case statement is used to identify the other shape
 		switch (other->getShapeType())
 		{
-		case SPHERE:
+		case ShapeType::SPHERE:
 		{
-			return isCollidingSphereSphere((Sphere *)this, (Sphere *)other, collisionNormal);
+			return isCollidingSphereSphere((Sphere*)this, (Sphere*)other, collisionNormal);
 		}
-		case PLANE:
+		case ShapeType::PLANE:
 		{
-			return isCollidingPlaneSphere((Plane *)other, (Sphere*)this, collisionNormal);
+			return isCollidingPlaneSphere((Plane*)other, (Sphere*)this, collisionNormal);
+		}
+		case ShapeType::AABB:
+		{
+			return isCollidingSphereAABB((Sphere*)this, (AABB*)other, collisionNormal);
 		}
 		}
 	}
-	case AABB:
-	{}
-	case PLANE:
+	case ShapeType::AABB:
+	{
+		switch (other->getShapeType())
+		{
+		case ShapeType::PLANE:
+		{
+			return isCollidingPlaneAABB((Plane*)other, (AABB*)this, collisionNormal);
+		}
+		case ShapeType::SPHERE:
+		{
+			return isCollidingSphereAABB((Sphere*)other, (AABB*)this, collisionNormal);
+		}
+		case ShapeType::AABB:
+		{
+			return isCollidingAABBAABB((AABB*)this, (AABB*)other, collisionNormal);
+		}
+		}
+	}
+	case ShapeType::PLANE:
 	{
 		// After identifying this shape is a plane, another case statement is used to identify the other shape
 		switch (other->getShapeType())
 		{
-		case SPHERE:
+		case ShapeType::SPHERE:
 		{
-			return isCollidingPlaneSphere((Plane *)this, (Sphere *)other, collisionNormal);
+			return isCollidingPlaneSphere((Plane*)this, (Sphere*)other, collisionNormal);
+		}
+		case ShapeType::AABB:
+		{
+			return isCollidingPlaneAABB((Plane*)this, (AABB*)other, collisionNormal);
 		}
 		}
 	}
 	}
-
-
 	return false;
 }
 
@@ -106,6 +128,21 @@ bool Physics::Object::isCollidingPlaneSphere(Plane * objA, Sphere * objB, vec3 &
 		objB->setPosition(objB->getPosition() + collisionNormal * (objB->getRadius() -  distance));
 		return true;
 	}
+	return false;
+}
+
+bool Physics::Object::isCollidingPlaneAABB(Plane * objA, AABB * objB, vec3 & collisionNormal)
+{
+	return false;
+}
+
+bool Physics::Object::isCollidingAABBAABB(AABB * objA, AABB * objB, vec3 & collisionNormal)
+{
+	return false;
+}
+
+bool Physics::Object::isCollidingSphereAABB(Sphere * objA, AABB * objB, vec3 & collisionNormal)
+{
 	return false;
 }
 

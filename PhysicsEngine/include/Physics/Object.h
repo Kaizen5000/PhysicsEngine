@@ -3,19 +3,21 @@
 using glm::vec3;
 using glm::vec4;
 
-/*
-	The object class is a base class for objects in the scene such as spheres and planes. 
-	This class is pure virtual as it is not intended to instantiated on its own
-*/
+
 namespace Physics
 {
 	// Forward declaration
 	class Sphere;
 	class Plane;
+	class AABB;
 
 	// ShapeType enum to identify the shape of the object
-	enum ShapeType {SPHERE, PLANE, AABB};
+	enum class ShapeType {SPHERE, PLANE, AABB};
 
+	/*
+	The object class is a base class for objects in the scene such as spheres and planes.
+	This class is pure virtual as it is not intended to instantiated on its own
+	*/
 	class Object
 	{
 	protected:
@@ -76,6 +78,11 @@ namespace Physics
 		// The collision normal reference is further passed into these functions because the collision will be calculate and the collision normal can be assigned
 		bool isCollidingSphereSphere(Sphere * objA, Sphere * objB, vec3 &collisionNormal);
 		bool isCollidingPlaneSphere(Plane * objA, Sphere * objB, vec3 &collisionNormal);
+
+		// TODO: Implement these collision function
+		bool isCollidingPlaneAABB(Plane * objA, AABB * objB, vec3 &collisionNormal);
+		bool isCollidingAABBAABB(AABB * objA, AABB * objB, vec3 &collisionNormal);
+		bool isCollidingSphereAABB(Sphere * objA, AABB * objB, vec3 &collisionNormal);
 	};
 }
 

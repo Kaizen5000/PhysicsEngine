@@ -162,6 +162,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Physics\AABB.cpp" />
     <ClCompile Include="source\Physics\Constraint.cpp" />
     <ClCompile Include="source\Physics\Plane.cpp" />
     <ClCompile Include="source\Camera.cpp" />
@@ -173,6 +174,7 @@
     <ClCompile Include="source\Physics\Spring.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Physics\AABB.h" />
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\PhysicsEngineApp.h" />
     <ClInclude Include="include\Physics\Constraint.h" />
