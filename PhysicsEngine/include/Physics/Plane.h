@@ -32,4 +32,3 @@ namespace Physics
 		float m_distance;
 	};
 }
-

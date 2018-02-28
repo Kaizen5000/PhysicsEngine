@@ -1,6 +1,7 @@
 #include "Physics/Object.h"
 #include "Physics/Sphere.h"
 #include "Physics/Plane.h"
+#include "Physics/AABB.h"
 #include "Gizmos.h"
 #include <glm/geometric.hpp>
 using namespace Physics;
@@ -21,7 +22,6 @@ Object::~Object()
 }
 
 // This uses case statements to identify this object and the other object
-// Then it delete
 bool Physics::Object::isColliding(Object * other, vec3 & collisionNormal)
 {
 	// Case statement to identify this shape
@@ -111,12 +111,9 @@ bool Physics::Object::isCollidingSphereSphere(Sphere * objA, Sphere * objB, vec3
 
 bool Physics::Object::isCollidingPlaneSphere(Plane * objA, Sphere * objB, vec3 &collisionNormal)
 {
-	// Get the sphere position, calculated as if the plane was at 0,0,0
-	vec3 spherePosition = objA->getPosition() + objB->getPosition();
-	
 	// The distance is the dot product of the spherePosition and plane normal, minus the plane distance
 	// This projects the sphere distance onto the closest point on the plane
-	float distance = glm::dot(spherePosition, objA->getDirection()) - objA->getDistance();
+	float distance = glm::dot(objB->getPosition(), objA->getDirection()) - objA->getDistance();
 
 	// If the distance is less than the radius of the sphere, there is a collision
 	if (distance < objB->getRadius())
@@ -133,12 +130,57 @@ bool Physics::Object::isCollidingPlaneSphere(Plane * objA, Sphere * objB, vec3 &
 
 bool Physics::Object::isCollidingPlaneAABB(Plane * objA, AABB * objB, vec3 & collisionNormal)
 {
+	float distance = glm::dot(objB->getPosition(), objA->getDirection()) - objA->getDistance();
+
+	float radius =	glm::dot(objB->getExtents().x, objA->getDirection().x) +
+					glm::dot(objB->getExtents().y, objA->getDirection().y) +
+					glm::dot(objB->getExtents().z, objA->getDirection().z);
+	
+	if (distance > objB->getExtents().x || distance > objB->getExtents().y || distance > objB->getExtents().z)
+	{
+		return false;
+	}
+	else
+	{
+		
+		collisionNormal = objA->getDirection();
+
+		objB->setPosition(objB->getPosition() + collisionNormal * (radius - distance));
+		return true;
+	}
 	return false;
 }
 
 bool Physics::Object::isCollidingAABBAABB(AABB * objA, AABB * objB, vec3 & collisionNormal)
 {
-	return false;
+	// Displacement
+	vec3 distance = objB->getPosition() - objA->getPosition();
+	// Get the absolute value of the distance to account for objB being behind objA
+	vec3 absDistance = glm::abs(distance);
+
+	vec3 totalExtents = objA->getExtents() + objB->getExtents();
+
+	if (absDistance.x > totalExtents.x || absDistance.y > totalExtents.y || absDistance.z > totalExtents.z)
+	{	
+		// No collision
+		return false;
+	}
+
+	glm::vec3 overlap = totalExtents - absDistance;
+	float smallestOverlap = glm::min(glm::min(overlap.x, overlap.y), overlap.z);
+	if (smallestOverlap == overlap.x)
+	{
+		collisionNormal = glm::vec3(1, 0, 0) * glm::sign(distance.x);
+	}
+	else if (smallestOverlap == overlap.y)
+	{
+		collisionNormal = glm::vec3(0, 1, 0) * glm::sign(distance.y);
+	}
+	else  // z
+	{
+		collisionNormal = glm::vec3(0, 0, 1) * glm::sign(distance.z);
+	}
+	return true;
 }
 
 bool Physics::Object::isCollidingSphereAABB(Sphere * objA, AABB * objB, vec3 & collisionNormal)

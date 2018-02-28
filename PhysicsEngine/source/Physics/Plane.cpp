@@ -24,11 +24,13 @@ void Physics::Plane::draw()
 	// Creates a rotational matrix based on the plane normal and up vector
 	glm::mat3 rot = glm::orientation(m_direction, vec3(0, 1, 0));
 
+	glm::vec3 pos = m_direction * m_distance;
+
 	// Calculates the vertices of the plane based on the extents and the rotation matrix
-	vec3 tr = m_position + rot * vec3(extents, 0, extents);		// Top right
-	vec3 br = m_position + rot * vec3(extents, 0, -extents);	// Back right
-	vec3 bl = m_position + rot * vec3(-extents, 0, -extents);	// Back left
-	vec3 tl = m_position + rot * vec3(-extents, 0, extents);	// Top left
+	vec3 tr = pos + rot * vec3(extents, 0, extents);		// Top right
+	vec3 br = pos + rot * vec3(extents, 0, -extents);	// Back right
+	vec3 bl = pos + rot * vec3(-extents, 0, -extents);	// Back left
+	vec3 tl = pos + rot * vec3(-extents, 0, extents);	// Top left
 
 	// Adds the triangles
 	aie::Gizmos::addTri(tr, br, bl, m_color);

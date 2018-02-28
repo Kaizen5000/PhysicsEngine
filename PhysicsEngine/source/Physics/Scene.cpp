@@ -176,7 +176,7 @@ void Physics::Scene::checkCollision()
 
 void Physics::Scene:: resolveCollision()
 {
-
+	// TODO: COMMENT HERE
 	for (auto col : m_collisions)
 	{
 		// If both objects are static, skip collision resolution
@@ -205,9 +205,28 @@ void Physics::Scene:: resolveCollision()
 			Sphere * sphereB = (Sphere*)col.objB;
 			float penetration = (sphereA->getRadius() + sphereB->getRadius()) - (glm::distance(col.objB->getPosition(), col.objA->getPosition()));
 
+			// Seperate the two objects, using whatever detail of seperation you want
+			if (!col.objB->getIsStatic()) col.objB->setPosition(col.objB->getPosition() + (penetration / 2)* col.collisionNormal);
+			if (!col.objA->getIsStatic()) col.objA->setPosition(col.objA->getPosition() - (penetration / 2)* col.collisionNormal);
+			
+		}
+		if (col.objA->getShapeType() == ShapeType::PLANE)
+		{
+			// Cast to plane
+			Plane* plane = (Plane*)col.objA;
+			
+			// Caclualte the velocity of the second object
+			// Resulting velocity = velocity - (1 + elasticity)velocity.collision normal * collision normal
+			vec3 velocity = col.objB->getVelocity() - (1 + col.objB->getElasticity())  * (glm::dot(col.objB->getVelocity(), plane->getDirection())) * plane->getDirection();
+
+			// Set velocity
+			col.objB->setVelocity(velocity);
+		}
+		else
+		{
 			if (col.objA->getIsStatic())
 			{
-				col.objB->setVelocity(col.objB->getVelocity() - (1 + col.objB->getElasticity()) * glm::dot(col.objB->getVelocity(), col.collisionNormal) * col.collisionNormal );
+				col.objB->setVelocity(col.objB->getVelocity() - (1 + col.objB->getElasticity()) * glm::dot(col.objB->getVelocity(), col.collisionNormal) * col.collisionNormal);
 			}
 			else
 			{
@@ -225,22 +244,6 @@ void Physics::Scene:: resolveCollision()
 				// Apply the J against the collision vector direction to object A
 				col.objA->applyImpulse((-col.collisionNormal * impulseMagnitude)* inverseMassObjA);
 			}
-
-			// Seperate the two objects, using whatever detail of seperation you want
-			if(!col.objB->getIsStatic()) col.objB->setPosition(col.objB->getPosition() + (penetration / 2)* col.collisionNormal);
-			if(!col.objA->getIsStatic()) col.objA->setPosition(col.objA->getPosition() - (penetration / 2)* col.collisionNormal);
-		}
-		else
-		{
-			// Cast to plane
-			Plane* plane = (Plane*)col.objA;
-			
-			// Caclualte the velocity of the second object
-			// Resulting velocity = velocity - (1 + elasticity)velocity.collision normal * collision normal
-			vec3 velocity = col.objB->getVelocity() - (1 + col.objB->getElasticity())  * (glm::dot(col.objB->getVelocity(), plane->getDirection())) * plane->getDirection();
-
-			// Set velocity
-			col.objB->setVelocity(velocity);
 		}
 	}
 	// Clears the vector as all collisions have been resolved
