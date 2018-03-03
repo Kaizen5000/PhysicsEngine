@@ -71,9 +71,10 @@ bool PhysicsEngineApp::startup() {
 	// Make Cloth
 	MakeCloth(5, 5, vec3(0, 10, 0));
 
-	AABB * box = new AABB(vec3(2, 2, 2), vec3(2, 2, 2), 2.f, vec4(1.0f, 1.0f, 0.2f, 1.0f), false);
+	// Make static box
+	AABB * box = new AABB(vec3(2, 2, 2), vec3(2, 2, 2), 2.f, vec4(1.0f, 1.0f, 0.2f, 1.0f), true);
 	m_scene->addObject(box);
-	box->setVelocity(vec3(50, 0, 0));
+
 	return true;
 }
 
@@ -115,13 +116,15 @@ void PhysicsEngineApp::update(float deltaTime)
 	// On mouse click, create sphere and shoot it forward
 	if (input->wasMouseButtonPressed(aie::INPUT_MOUSE_BUTTON_LEFT))
 	{
-		//Sphere * sphere3 = new Sphere(m_camera->GetPosition(), 1.f, 1.0f, vec4(0.4f, 0.5f, 0.1f, 0.8f), false);
-		//m_scene->addObject(sphere3);
 		AABB * box = new AABB(m_camera->GetPosition(), vec3(2, 2, 2), 2.f, vec4(1.0f, 1.0f, 0.2f, 1.0f), false);
 		m_scene->addObject(box);
 		box->setVelocity(m_camera->getHeading() * 15.f);
-		//sphere3->setVelocity(m_camera->getHeading() * 15.f);
-
+	}
+	if (input->wasKeyPressed(aie::INPUT_KEY_E))
+	{
+		Sphere * sphere3 = new Sphere(m_camera->GetPosition(), 1.f, 1.0f, vec4(0.4f, 0.5f, 0.1f, 0.8f), false);
+		m_scene->addObject(sphere3);
+		sphere3->setVelocity(m_camera->getHeading() * 15.f);
 	}
 	
 	// Apply global for and update scene

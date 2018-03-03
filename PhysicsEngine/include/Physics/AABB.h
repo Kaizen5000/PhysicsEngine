@@ -11,9 +11,10 @@ namespace Physics
 
 		// Getter
 		inline const vec3 & getExtents() const { return m_extents; }
-		vec3 getMin();
+		vec3 getMin(); 
 		vec3 getMax();
 	protected:
+		// How much the AABB extends from the centre
 		vec3 m_extents;
 	};
 }

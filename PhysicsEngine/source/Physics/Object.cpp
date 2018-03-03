@@ -130,21 +130,25 @@ bool Physics::Object::isCollidingPlaneSphere(Plane * objA, Sphere * objB, vec3 &
 
 bool Physics::Object::isCollidingPlaneAABB(Plane * objA, AABB * objB, vec3 & collisionNormal)
 {
+	// Get the distance of the AABB from the plane
 	float distance = glm::dot(objB->getPosition(), objA->getDirection()) - objA->getDistance();
 
+	// Calculate the "radius" of the AABB but projecting each axis along the plane normal
 	float radius =	glm::dot(objB->getExtents().x, objA->getDirection().x) +
 					glm::dot(objB->getExtents().y, objA->getDirection().y) +
 					glm::dot(objB->getExtents().z, objA->getDirection().z);
 	
+	// If it is not touching on every axis, there is no collision
 	if (distance > objB->getExtents().x || distance > objB->getExtents().y || distance > objB->getExtents().z)
 	{
 		return false;
 	}
 	else
 	{
-		
+		// The collision normal is the plane normal
 		collisionNormal = objA->getDirection();
 
+		// Separation 
 		objB->setPosition(objB->getPosition() + collisionNormal * (radius - distance));
 		return true;
 	}
@@ -155,21 +159,29 @@ bool Physics::Object::isCollidingAABBAABB(AABB * objA, AABB * objB, vec3 & colli
 {
 	// Displacement
 	vec3 distance = objB->getPosition() - objA->getPosition();
+
 	// Get the absolute value of the distance to account for objB being behind objA
 	vec3 absDistance = glm::abs(distance);
 
+	// The sum of the extents of both AABBs, 
 	vec3 totalExtents = objA->getExtents() + objB->getExtents();
 
+	// If the distance is larger than the total extent on any axis, there is no collision
 	if (absDistance.x > totalExtents.x || absDistance.y > totalExtents.y || absDistance.z > totalExtents.z)
 	{	
 		// No collision
 		return false;
 	}
 
+	// Get the overlap
 	glm::vec3 overlap = totalExtents - absDistance;
+
+	// The axis with the smallest overlap is the axis the collision is happening on, thereby determining the collision normal
 	float smallestOverlap = glm::min(glm::min(overlap.x, overlap.y), overlap.z);
+
 	if (smallestOverlap == overlap.x)
-	{
+	{ 
+		// Multiply the collision normal but the sign of the distance, if the distance is negative, the collision normal will be negated
 		collisionNormal = glm::vec3(1, 0, 0) * glm::sign(distance.x);
 	}
 	else if (smallestOverlap == overlap.y)
@@ -185,7 +197,41 @@ bool Physics::Object::isCollidingAABBAABB(AABB * objA, AABB * objB, vec3 & colli
 
 bool Physics::Object::isCollidingSphereAABB(Sphere * objA, AABB * objB, vec3 & collisionNormal)
 {
-	return false;
+	// Displacement
+	vec3 distance = objB->getPosition() - objA->getPosition();
+
+	// Get the absolute value of the distance to account for objB being behind objA
+	vec3 absDistance = glm::abs(distance);
+
+	// The sum of the extents of both AABBs, 
+	vec3 totalExtents = objA->getRadius() + objB->getExtents();
+
+	// If the distance is larger than the total extent on any axis, there is no collision
+	if (absDistance.x > totalExtents.x || absDistance.y > totalExtents.y || absDistance.z > totalExtents.z)
+	{
+		// No collision
+		return false;
+	}
+
+	// Get the overlap
+	glm::vec3 overlap = totalExtents - absDistance;
+
+	// The axis with the smallest overlap is the axis the collision is happening on, thereby determining the collision normal
+	float smallestOverlap = glm::min(glm::min(overlap.x, overlap.y), overlap.z);
+
+	if (smallestOverlap == overlap.x)
+	{
+		collisionNormal = glm::vec3(1, 0, 0) * glm::sign(distance.x);
+	}
+	else if (smallestOverlap == overlap.y)
+	{
+		collisionNormal = glm::vec3(0, 1, 0) * glm::sign(distance.y);
+	}
+	else  // z
+	{
+		collisionNormal = glm::vec3(0, 0, 1) * glm::sign(distance.z);
+	}
+	return true;
 }
 
 void Object::update(float deltaTime)
