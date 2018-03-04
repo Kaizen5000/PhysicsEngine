@@ -48,6 +48,7 @@ bool PhysicsEngineApp::startup() {
 	m_sphere = new Sphere(vec3(0.f,20.f,10.0f), 2.0f, 3.0f, vec4(0.2f, 0.1f, 0.7f, 0.9f), false);
 	m_scene->addObject(m_sphere);
 
+
 	// Make light object
 	Sphere * sphere2 = new Sphere(vec3(20.0f, 20.0f, 10.0f),0.5f,1.0f, vec4(1.0f, 1.0f, 0.2f, 1.0f), false);
 	m_scene->addObject(sphere2);
@@ -75,6 +76,7 @@ bool PhysicsEngineApp::startup() {
 	AABB * box = new AABB(vec3(2, 2, 2), vec3(2, 2, 2), 2.f, vec4(1.0f, 1.0f, 0.2f, 1.0f), true);
 	m_scene->addObject(box);
 
+	m_sphere = nullptr;
 	return true;
 }
 
@@ -113,20 +115,33 @@ void PhysicsEngineApp::update(float deltaTime)
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
 
-	// On mouse click, create sphere and shoot it forward
+	// On mouse click, create AABB and shoot it forward
 	if (input->wasMouseButtonPressed(aie::INPUT_MOUSE_BUTTON_LEFT))
 	{
 		AABB * box = new AABB(m_camera->GetPosition(), vec3(2, 2, 2), 2.f, vec4(1.0f, 1.0f, 0.2f, 1.0f), false);
 		m_scene->addObject(box);
 		box->setVelocity(m_camera->getHeading() * 15.f);
 	}
+
+	// When E is pressed, create sphere and shoot it forward
 	if (input->wasKeyPressed(aie::INPUT_KEY_E))
 	{
-		Sphere * sphere3 = new Sphere(m_camera->GetPosition(), 1.f, 1.0f, vec4(0.4f, 0.5f, 0.1f, 0.8f), false);
-		m_scene->addObject(sphere3);
-		sphere3->setVelocity(m_camera->getHeading() * 15.f);
+		m_sphere = new Sphere(m_camera->GetPosition(), 1.f, 1.0f, vec4(0.4f, 0.5f, 0.1f, 0.8f), false);
+		m_scene->addObject(m_sphere);
+		m_sphere->setVelocity(m_camera->getHeading() * 15.f);
 	}
 	
+	// Deletes the most recent sphere created by the user
+	if (input->wasKeyPressed(aie::INPUT_KEY_Q))
+	{
+		if (m_sphere != nullptr)
+		{
+			m_scene->removeObject(m_sphere);
+			delete m_sphere;
+			m_sphere = nullptr;
+		}
+		
+	}
 	// Apply global for and update scene
 	m_scene->applyGlobalForce();
 	m_scene->update(deltaTime);
@@ -160,7 +175,6 @@ void PhysicsEngineApp::MakeCloth(int rows, int columns, vec3 & origin,float radi
 {
 	vector<Object *> clothSpheres;	// Holds the spheres
 	vector<Spring *> clothSprings;	// Holds the springs 
-	Spring * clothSpring;			// Spring pointer
 	Sphere * clothSphere;			// Cloth pointer
 
 	// Iterate through rows
