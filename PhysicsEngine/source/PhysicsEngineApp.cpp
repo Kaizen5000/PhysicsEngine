@@ -41,7 +41,7 @@ bool PhysicsEngineApp::startup() {
 	m_camera->SetPosition(glm::vec3(10, 10, 10));
 	m_camera->Lookat(glm::vec3(0, 0, 0));
 	
-	// Create an scene
+	// Create a scene
 	m_scene = new Scene();
 
 	// Make heavy object
